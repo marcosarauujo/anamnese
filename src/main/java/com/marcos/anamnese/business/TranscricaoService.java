@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +46,10 @@ public class TranscricaoService {
         }
 
 
+    }
+
+    public List<TranscricaoEntity> buscarPorCrianca(Long criancaId) {
+        return transcricaoRepository.findByCriancaId(criancaId);
     }
 
 }
