@@ -1,8 +1,9 @@
 package com.marcos.anamnese.controller;
 
 import com.marcos.anamnese.business.TranscricaoService;
-import com.marcos.anamnese.infrastructure.entitys.TranscricaoEntity;
+import com.marcos.anamnese.business.dto.TranscricaoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,11 @@ public class TranscricaoController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Gerar transcrição de áudio",
             description = "Envia um áudio, transcreve e salva no MongoDB")
-    public ResponseEntity<String> transcreverESalvarAudio(@RequestParam("audio")MultipartFile audio,
-                                                          @RequestParam("criancaId")Long criancaId,
-                                                          @RequestParam("terapeutaId")Long terapeutaId,
-                                                          @RequestHeader(name = "Authorization", required = false) String token) throws IOException {
+    public ResponseEntity<String> transcreverESalvarAudio(
+            @RequestParam("audio") MultipartFile audio,
+            @RequestParam("criancaId") Long criancaId,
+            @RequestParam("terapeutaId") Long terapeutaId,
+            @Parameter(hidden = true) @RequestHeader(name = "Authorization", required = false) String token) throws IOException {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 transcricaoService.processarESalvarAudio(audio, criancaId, terapeutaId, token));
@@ -40,7 +42,7 @@ public class TranscricaoController {
 
     @GetMapping("/crianca/{criancaId}")
     @Operation(summary = "Listar transcrições", description = "Busca os textos brutos das sessões de um paciente")
-    public ResponseEntity<List<TranscricaoEntity>> listarPorCrianca(@PathVariable Long criancaId) {
+    public ResponseEntity<List<TranscricaoResponseDTO>> listarPorCrianca(@PathVariable Long criancaId) {
         return ResponseEntity.ok(transcricaoService.buscarPorCrianca(criancaId));
     }
 

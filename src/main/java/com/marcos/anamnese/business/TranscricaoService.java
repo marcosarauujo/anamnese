@@ -2,6 +2,8 @@ package com.marcos.anamnese.business;
 
 import com.marcos.anamnese.business.dto.CriancaResponseDTO;
 import com.marcos.anamnese.business.dto.TerapeutaResponseDTO;
+import com.marcos.anamnese.business.dto.TranscricaoResponseDTO;
+import com.marcos.anamnese.business.mapper.TranscricaoMapper;
 import com.marcos.anamnese.infrastructure.client.CoreClient;
 import com.marcos.anamnese.infrastructure.entitys.TranscricaoEntity;
 import com.marcos.anamnese.infrastructure.exceptions.ConflictException;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class TranscricaoService {
     private final CoreClient coreClient;
     private final AudioService audioService;
     private final TranscricaoRepository transcricaoRepository;
+    private final TranscricaoMapper transcricaoMapper;
 
     public String processarESalvarAudio(MultipartFile audio,
                                         Long criancaId,
@@ -48,8 +52,10 @@ public class TranscricaoService {
 
     }
 
-    public List<TranscricaoEntity> buscarPorCrianca(Long criancaId) {
-        return transcricaoRepository.findByCriancaId(criancaId);
+    public List<TranscricaoResponseDTO> buscarPorCrianca(Long criancaId) {
+        return transcricaoRepository.findByCriancaId(criancaId).stream()
+                .map(transcricaoMapper::paraDTO)
+                .collect(Collectors.toList());
     }
 
 }
