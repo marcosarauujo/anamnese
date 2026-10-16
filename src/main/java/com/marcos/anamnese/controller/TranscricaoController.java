@@ -59,4 +59,23 @@ public class TranscricaoController {
         return ResponseEntity.ok(transcricaoService.buscarPorCrianca(criancaId));
     }
 
+    @PostMapping(value = "/upload-imagem", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Fazer upload e extrair dados de uma ou mais fotos do checklist",
+            description = "Recebe uma ou mais imagens e extrai os dados clínicos."
+    )
+    @ApiResponse(responseCode = "201", description = "Dados das imagens extraídos e salvos com sucesso no banco de dados.")
+    @ApiResponse(responseCode = "401", description = "Token JWT inválido ou ausente.")
+    @ApiResponse(responseCode = "500", description = "Erro ao processar imagens na OpenAI.")
+    public ResponseEntity<String> extrairESalvarImagens(
+            @RequestParam("imagens") List<MultipartFile> imagens,
+            @RequestParam("criancaId") Long criancaId,
+            @RequestParam("terapeutaId") Long terapeutaId,
+            @Parameter(hidden = true) @RequestHeader(
+                    name = "Authorization", required = false) String token) throws IOException {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                transcricaoService.processarESalvarImagens(imagens, criancaId, terapeutaId, token));
+    }
+
 }
